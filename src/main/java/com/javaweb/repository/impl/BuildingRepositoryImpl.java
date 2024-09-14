@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import com.javaweb.repository.BuidlingRepository;
 import com.javaweb.repository.entity.BuildingEntity;
+import com.javaweb.utils.StringUtil;
 
 @Repository
 public class BuildingRepositoryImpl implements BuidlingRepository{
@@ -20,11 +21,27 @@ public class BuildingRepositoryImpl implements BuidlingRepository{
     static final String USER = "root"; 
     static final String PASS = "123456";
     
-    public static void joinTable(Map<String, Object> params, List<String> typeCode) {
-    	
+    public static void joinTable(Map<String, Object> params, List<String> typeCode, StringBuilder sql) {
+        String staffId = (String) params.get("staffId");
+        if (StringUtil.checkString(staffId)) {
+            sql.append(" INNER JOIN assignmentbuilding ON b.id = assignmentbuilding.buildingid ");
+        }
+
+        if (typeCode != null && typeCode.size() != 0) {
+            sql.append(" INNER JOIN buildingrenttype ON b.id = buildingrenttype.buildingid ");
+            sql.append(" INNER JOIN renttype ON renttype.id = buildingrenttype.renttypeid ");
+        }
+
+        String rentAreaTo = (String) params.get("areaTo");
+        String rentAreaFrom = (String) params.get("areaFrom");
+
+        if (StringUtil.checkString(rentAreaTo) == true || 
+            StringUtil.checkString(rentAreaFrom) == true) {
+            sql.append(" INNER JOIN rentarea ON rentarea.buildingid = b.id ");
+        }
     }
     
-    public static void query(Map<String, Object> params, List<String> typeCode) {
+    public static void queryNormal(Map<String, Object> params, StringBuilder where) {
     	
     }
     @Override
